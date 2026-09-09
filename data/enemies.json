@@ -10,5 +10,17 @@
     "hp": 40,
     "damage": 10,
     "type": "бандит"
+  },
+  "raider": {
+    "name": "Рейдер",
+    "hp": 55,
+    "damage": 14,
+    "type": "бандит"
+  },
+  "security_drone": {
+    "name": "Дрон-охранник",
+    "hp": 45,
+    "damage": 16,
+    "type": "дрон"
   }
 }

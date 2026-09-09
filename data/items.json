@@ -22,5 +22,29 @@
     "type": "weapon",
     "description": "Пистолет, урон 8",
     "effect": 8
+  },
+  "shotgun": {
+    "name": "Дробовик",
+    "type": "weapon",
+    "description": "Мощное оружие ближнего боя, урон 15",
+    "effect": 15
+  },
+  "stimpak": {
+    "name": "Стимулятор",
+    "type": "heal",
+    "description": "Восстанавливает 30 здоровья",
+    "effect": 30
+  },
+  "keycard": {
+    "name": "Ключ-карта",
+    "type": "craft",
+    "description": "Открывает доступ к некоторым дверям",
+    "effect": 0
+  },
+  "energy_cell": {
+    "name": "Энергоячейка",
+    "type": "energy",
+    "description": "Восстанавливает 40 энергии",
+    "effect": 40
   }
 }
