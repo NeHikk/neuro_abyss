@@ -1,7 +1,5 @@
 from game.player import Player
-from game.item import Item
-from game.enemy import Enemy
-from game.location import Location
+from game.location import World
 from game.battle import start_battle
 import random
 
@@ -9,6 +7,7 @@ class Game:
     def __init__(self):
         self.running = True
         self.player = None
+        self.world = None
 
     def run(self):
         self.setup_game()
@@ -19,35 +18,9 @@ class Game:
         name = input("Введи имя героя (по умолчанию Алекс): ").strip() or "Алекс"
         self.player = Player(name)
 
-        # Локации
-        village = Location(
-            "Разрушенная деревня",
-            "Ты стоишь посреди того, что когда-то было деревней. Вокруг обгоревшие дома, а в воздухе висит запах гари."
-        )
-        forest = Location(
-            "Тёмный лес",
-            "Густые деревья почти не пропускают свет. Где-то вдалеке слышен треск."
-        )
-        bunker = Location(
-            "Старый бункер",
-            "Тяжёлая металлическая дверь ведёт внутрь. Внутри темно, но есть признаки недавнего пребывания людей."
-        )
-
-        # Связи
-        village.add_exit("север", forest)
-        village.add_exit("запад", bunker)
-        forest.add_exit("юг", village)
-        bunker.add_exit("восток", village)
-
-        # Предметы
-        village.items.append(Item("Аптечка", "heal", "Восстанавливает 20 здоровья", 20))
-        village.items.append(Item("Батарея", "energy", "Восстанавливает 25 энергии", 25))
-        forest.items.append(Item("Старый пистолет", "weapon", "Пистолет, урон 8", 8))
-        forest.enemies.append(Enemy("Порченый волк", 30, 8, "мутант"))
-        bunker.items.append(Item("Антирад", "stability", "Снижает нестабильность на 15", 15))
-        bunker.enemies.append(Enemy("Бандит", 40, 10, "бандит"))
-
-        self.player.current_location = village
+        # Загружаем мир из JSON
+        self.world = World()
+        self.player.current_location = self.world.get_start_location()
 
     def main_loop(self):
         while self.running and self.player.hp > 0:
@@ -65,8 +38,7 @@ class Game:
                 elif self.player.hp <= 0:
                     break  # игрок погиб
                 else:
-                    # если сбежал, враг остаётся, но продолжать можно
-                    continue
+                    continue  # сбежал, враг остаётся
 
             print("\nЧто делаешь?")
             print("1. Идти (переместиться)")
