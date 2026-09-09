@@ -1,0 +1,26 @@
+{
+  "medkit": {
+    "name": "Аптечка",
+    "type": "heal",
+    "description": "Восстанавливает 20 здоровья",
+    "effect": 20
+  },
+  "battery": {
+    "name": "Батарея",
+    "type": "energy",
+    "description": "Восстанавливает 25 энергии",
+    "effect": 25
+  },
+  "antirad": {
+    "name": "Антирад",
+    "type": "stability",
+    "description": "Снижает нестабильность на 15",
+    "effect": 15
+  },
+  "pistol": {
+    "name": "Старый пистолет",
+    "type": "weapon",
+    "description": "Пистолет, урон 8",
+    "effect": 8
+  }
+}

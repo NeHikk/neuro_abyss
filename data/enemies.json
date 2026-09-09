@@ -1,0 +1,14 @@
+{
+  "corrupted_wolf": {
+    "name": "Порченый волк",
+    "hp": 30,
+    "damage": 8,
+    "type": "мутант"
+  },
+  "bandit": {
+    "name": "Бандит",
+    "hp": 40,
+    "damage": 10,
+    "type": "бандит"
+  }
+}
