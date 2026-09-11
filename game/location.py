@@ -1,7 +1,13 @@
 import json
+import os
 from game.item import Item
 from game.enemy import Enemy
-from game.dialogue import NPC  # убедись, что dialogue.py существует и содержит NPC
+from game.dialogue import NPC
+
+# Определяем корень проекта (папка, где лежит main.py и data/)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+
 
 class Location:
     def __init__(self, loc_id, name, description=""):
@@ -11,13 +17,10 @@ class Location:
         self.exits = {}
         self.items = []
         self.enemies = []
-        self.npcs = []  # список NPC
+        self.npcs = []
 
     def add_exit(self, direction, location):
         self.exits[direction] = location
-
-    def get_exits(self):
-        return list(self.exits.keys())
 
     def describe(self):
         print(f"\n--- {self.name} ---")
@@ -33,24 +36,20 @@ class Location:
 
 
 class World:
-    def __init__(self, locations_file="data/locations.json",
-                 items_file="data/items.json",
-                 enemies_file="data/enemies.json"):
-        # Загружаем предметы и врагов
+    def __init__(self,
+                 locations_file=os.path.join(DATA_DIR, "locations.json"),
+                 items_file=os.path.join(DATA_DIR, "items.json"),
+                 enemies_file=os.path.join(DATA_DIR, "enemies.json"),
+                 npcs_file=os.path.join(DATA_DIR, "npcs.json")):
         self.items = self._load_items(items_file)
         self.enemies = self._load_enemies(enemies_file)
-
-        # Загружаем локации (пока без связей)
+        self.npcs = self._load_npcs(npcs_file)
         self.locations = self._load_locations(locations_file)
-
-        # Устанавливаем связи между локациями и добавляем контент
         self._connect_locations()
 
     def _load_items(self, filepath):
-        """Читает items.json и возвращает словарь {id: Item}."""
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
-
         return {
             item_id: Item(
                 name=item_data["name"],
@@ -62,25 +61,40 @@ class World:
         }
 
     def _load_enemies(self, filepath):
-        """Читает enemies.json и возвращает словарь {id: Enemy}."""
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
-
         return {
             enemy_id: Enemy(
-                name=enemy_data["name"],
-                hp=enemy_data["hp"],
-                damage=enemy_data["damage"],
-                enemy_type=enemy_data.get("type", "мутант"),
+                name=ed["name"],
+                hp=ed["hp"],
+                damage=ed["damage"],
+                enemy_type=ed.get("type", "мутант"),
             )
-            for enemy_id, enemy_data in data.items()
+            for enemy_id, ed in data.items()
         }
 
-    def _load_locations(self, filepath):
-        """Читает locations.json и создаёт объекты Location без связей."""
+    def _load_npcs(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
+        npcs = {}
+        for npc_id, nd in data.items():
+            npc = NPC(
+                npc_id=npc_id,
+                name=nd["name"],
+                npc_type=nd.get("type", "simple"),
+                description=nd.get("description", ""),
+                dialogue=nd.get("dialogue", "")
+            )
+            # Загружаем инвентарь NPC из items
+            for item_id in nd.get("inventory", []):
+                if item_id in self.items:
+                    npc.inventory.append(self.items[item_id])
+            npcs[npc_id] = npc
+        return npcs
 
+    def _load_locations(self, filepath):
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
         return {
             loc_id: Location(
                 loc_id=loc_id,
@@ -91,40 +105,28 @@ class World:
         }
 
     def _connect_locations(self):
-        """
-        Проходим по всем локациям и для каждого выхода из JSON
-        устанавливаем ссылку на объект соседней локации.
-        Также добавляем предметы, врагов и NPC.
-        """
-        # Снова читаем locations.json, чтобы получить exits и содержимое
-        with open("data/locations.json", 'r', encoding='utf-8') as f:
+        # Используем абсолютный путь через DATA_DIR
+        with open(os.path.join(DATA_DIR, "locations.json"), 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         for loc_id, loc_data in data.items():
-            current_location = self.locations[loc_id]
+            current = self.locations[loc_id]
 
-            # Добавляем предметы
             for item_id in loc_data.get("items", []):
                 if item_id in self.items:
-                    current_location.items.append(self.items[item_id])
+                    current.items.append(self.items[item_id])
 
-            # Добавляем врагов
             for enemy_id in loc_data.get("enemies", []):
                 if enemy_id in self.enemies:
-                    current_location.enemies.append(self.enemies[enemy_id])
+                    current.enemies.append(self.enemies[enemy_id])
 
-            # Устанавливаем выходы
+            for npc_id in loc_data.get("npcs", []):
+                if npc_id in self.npcs:
+                    current.npcs.append(self.npcs[npc_id])
+
             for direction, target_id in loc_data.get("exits", {}).items():
                 if target_id in self.locations:
-                    current_location.add_exit(direction, self.locations[target_id])
-
-            # Добавляем NPC (пока вручную для локации shelter)
-            if loc_id == "shelter":
-                trader = NPC("Михаил", "Торговец, который может обменять вещи.")
-                # Можешь дать ему предметы для обмена, если хочешь
-                # trader.inventory.append(self.items["medkit"])
-                current_location.npcs.append(trader)
+                    current.add_exit(direction, self.locations[target_id])
 
     def get_start_location(self, start_id="village"):
-        """Возвращает стартовую локацию (по умолчанию 'village')."""
         return self.locations.get(start_id)

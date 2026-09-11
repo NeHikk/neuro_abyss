@@ -1,26 +1,11 @@
 {
-  "corrupted_wolf": {
-    "name": "Порченый волк",
-    "hp": 30,
-    "damage": 8,
-    "type": "мутант"
-  },
-  "bandit": {
-    "name": "Бандит",
-    "hp": 40,
-    "damage": 10,
-    "type": "бандит"
-  },
-  "raider": {
-    "name": "Рейдер",
-    "hp": 55,
-    "damage": 14,
-    "type": "бандит"
-  },
-  "security_drone": {
-    "name": "Дрон-охранник",
-    "hp": 45,
-    "damage": 16,
-    "type": "дрон"
-  }
+  "corrupted_wolf": { "name": "Порченый волк", "hp": 30, "damage": 8, "type": "мутант" },
+  "mutant_hound": { "name": "Мутировавший гончий", "hp": 45, "damage": 12, "type": "мутант" },
+  "bandit": { "name": "Бандит", "hp": 40, "damage": 10, "type": "бандит" },
+  "raider": { "name": "Рейдер", "hp": 55, "damage": 14, "type": "бандит" },
+  "armored_raider": { "name": "Бронированный рейдер", "hp": 80, "damage": 18, "type": "бандит" },
+  "security_drone": { "name": "Дрон-охранник", "hp": 45, "damage": 16, "type": "дрон" },
+  "cultist": { "name": "Культист", "hp": 65, "damage": 15, "type": "культист" },
+  "rift_stalker": { "name": "Обитатель Разлома", "hp": 150, "damage": 22, "type": "босс" },
+  "corrupted_titan": { "name": "Порченый титан", "hp": 200, "damage": 25, "type": "босс" }
 }

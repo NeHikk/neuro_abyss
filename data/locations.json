@@ -1,60 +1,114 @@
 {
   "village": {
     "name": "Разрушенная деревня",
-    "description": "Ты стоишь посреди того, что когда-то было деревней. Вокруг обгоревшие дома, а в воздухе висит запах гари.",
-    "exits": {
-      "север": "forest",
-      "запад": "bunker",
-      "восток": "ruins"
-    },
-    "items": ["medkit", "battery"],
-    "enemies": []
+    "description": "Обгоревшие дома, покосившийся колодец, запах гари. Здесь ты вырос. Теперь это лишь тень прошлого.",
+    "exits": { "север": "forest", "восток": "farm", "запад": "ruins" },
+    "items": ["medkit", "battery", "scrap"],
+    "enemies": [],
+    "npcs": ["igor"]
   },
   "forest": {
     "name": "Тёмный лес",
-    "description": "Густые деревья почти не пропускают свет. Где-то вдалеке слышен треск.",
-    "exits": {
-      "юг": "village",
-      "север": "shelter"
-    },
-    "items": ["pistol"],
-    "enemies": ["corrupted_wolf"]
-  },
-  "bunker": {
-    "name": "Старый бункер",
-    "description": "Тяжёлая металлическая дверь ведёт внутрь. Внутри темно, но есть признаки недавнего пребывания людей.",
-    "exits": {
-      "восток": "village"
-    },
-    "items": ["antirad"],
-    "enemies": ["bandit"]
-  },
-  "ruins": {
-    "name": "Руины города",
-    "description": "Остовы небоскрёбов, покрытые цифровой плесенью. Опасное место, но здесь можно найти ценные вещи.",
-    "exits": {
-      "запад": "village",
-      "юг": "lab"
-    },
-    "items": ["shotgun", "energy_cell"],
-    "enemies": ["raider"]
-  },
-  "lab": {
-    "name": "Заброшенная лаборатория",
-    "description": "Бывший исследовательский комплекс, где разрабатывались протоколы безопасности Нейросферы.",
-    "exits": {
-      "север": "ruins"
-    },
-    "items": ["keycard", "stimpak"],
-    "enemies": ["security_drone"]
+    "description": "Густые деревья почти не пропускают свет. Ветви шевелятся, хотя ветра нет. Слышен треск.",
+    "exits": { "юг": "village", "север": "shelter", "запад": "bunker" },
+    "items": ["pistol", "scrap"],
+    "enemies": ["corrupted_wolf"],
+    "npcs": []
   },
   "shelter": {
     "name": "Убежище выживших",
-    "description": "Небольшое укреплённое поселение, где люди ещё пытаются жить нормальной жизнью.",
-    "exits": {
-      "юг": "forest"
-    },
+    "description": "Небольшое укреплённое поселение за бетонными стенами. Люди здесь пытаются жить нормально.",
+    "exits": { "юг": "forest" },
     "items": [],
-    "enemies": []
+    "enemies": [],
+    "npcs": ["mikhail"]
+  },
+  "farm": {
+    "name": "Заброшенная ферма",
+    "description": "Пустые амбары, ржавая техника. Кто-то здесь недавно был — следы костра ещё тёплые.",
+    "exits": { "запад": "village", "юг": "dead_field" },
+    "items": ["medkit", "chemicals"],
+    "enemies": ["mutant_hound", "bandit"],
+    "npcs": []
+  },
+  "bunker": {
+    "name": "Старый бункер",
+    "description": "Тяжёлая металлическая дверь. Внутри темно, пахнет машинным маслом. Работает аварийное освещение.",
+    "exits": { "восток": "forest", "юг": "metro" },
+    "items": ["antirad", "scrap", "electronics"],
+    "enemies": ["bandit", "raider"],
+    "npcs": ["viktor"]
+  },
+  "ruins": {
+    "name": "Руины города",
+    "description": "Остовы небоскрёбов, покрытые цифровой плесенью. Воздух здесь гудит от остаточной энергии.",
+    "exits": { "восток": "village", "юг": "lab", "запад": "hospital", "север": "dead_field" },
+    "items": ["shotgun", "battery", "scrap"],
+    "enemies": ["raider", "bandit"],
+    "npcs": []
+  },
+  "lab": {
+    "name": "Заброшенная лаборатория",
+    "description": "Бывший исследовательский комплекс «Гелиоса». Мониторы всё ещё мерцают, показывая обрывки данных.",
+    "exits": { "север": "ruins" },
+    "items": ["keycard", "stimpak", "electronics"],
+    "enemies": ["security_drone"],
+    "npcs": []
+  },
+  "metro": {
+    "name": "Станция метро",
+    "description": "Тоннель уходит в темноту. Рельсы покрыты ржавчиной, а на путях видны следы чего-то большого.",
+    "exits": { "север": "bunker", "восток": "hospital" },
+    "items": ["rifle", "medkit"],
+    "enemies": ["mutant_hound", "corrupted_wolf"],
+    "npcs": []
+  },
+  "hospital": {
+    "name": "Руины больницы",
+    "description": "Палаты разрушены, но аптека уцелела. Запах лекарств смешивается с запахом гнили.",
+    "exits": { "восток": "ruins", "запад": "metro", "юг": "dead_field" },
+    "items": ["stimpak", "medkit", "chemicals"],
+    "enemies": ["raider", "mutant_hound"],
+    "npcs": []
+  },
+  "dead_field": {
+    "name": "Мёртвое поле",
+    "description": "Земля выжжена, воздух дрожит от аномалий. Здесь реальность нестабильна.",
+    "exits": { "север": "farm", "восток": "ruins", "запад": "hospital", "юг": "rift_approach", "восток2": "syndicate_base" },
+    "items": ["rad_away", "energy_cell"],
+    "enemies": ["cultist", "mutant_hound"],
+    "npcs": []
+  },
+  "rift_approach": {
+    "name": "Подступы к Разлому",
+    "description": "Воздух гудит, пространство искажается. Впереди — сияющая трещина в небе.",
+    "exits": { "север": "dead_field", "юг": "rift", "восток": "cultist_camp" },
+    "items": ["combat_armor", "energy_pistol"],
+    "enemies": ["armored_raider", "cultist"],
+    "npcs": []
+  },
+  "rift": {
+    "name": "Разлом",
+    "description": "Эпицентр катастрофы. Время здесь течёт неправильно. Ты чувствуешь, как твой имплант резонирует.",
+    "exits": { "север": "rift_approach" },
+    "items": ["rift_key"],
+    "enemies": ["rift_stalker"],
+    "npcs": []
+  },
+  "cultist_camp": {
+    "name": "Лагерь культа",
+    "description": "Палатки, ритуальные знаки, кости. Культисты поклоняются Бездне как божеству.",
+    "exits": { "запад": "rift_approach" },
+    "items": ["ritual_dagger"],
+    "enemies": ["cultist", "armored_raider"],
+    "npcs": ["cultist_leader"]
+  },
+  "syndicate_base": {
+    "name": "База Синдиката",
+    "description": "Укреплённый лагерь «Нового Рассвета». Здесь торгуют оружием и информацией.",
+    "exits": { "запад": "dead_field" },
+    "items": ["exoskeleton", "energy_cell"],
+    "enemies": [],
+    "npcs": ["syndicate_trader"]
   }
 }

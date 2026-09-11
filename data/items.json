@@ -1,50 +1,22 @@
 {
-  "medkit": {
-    "name": "Аптечка",
-    "type": "heal",
-    "description": "Восстанавливает 20 здоровья",
-    "effect": 20
-  },
-  "battery": {
-    "name": "Батарея",
-    "type": "energy",
-    "description": "Восстанавливает 25 энергии",
-    "effect": 25
-  },
-  "antirad": {
-    "name": "Антирад",
-    "type": "stability",
-    "description": "Снижает нестабильность на 15",
-    "effect": 15
-  },
-  "pistol": {
-    "name": "Старый пистолет",
-    "type": "weapon",
-    "description": "Пистолет, урон 8",
-    "effect": 8
-  },
-  "shotgun": {
-    "name": "Дробовик",
-    "type": "weapon",
-    "description": "Мощное оружие ближнего боя, урон 15",
-    "effect": 15
-  },
-  "stimpak": {
-    "name": "Стимулятор",
-    "type": "heal",
-    "description": "Восстанавливает 30 здоровья",
-    "effect": 30
-  },
-  "keycard": {
-    "name": "Ключ-карта",
-    "type": "craft",
-    "description": "Открывает доступ к некоторым дверям",
-    "effect": 0
-  },
-  "energy_cell": {
-    "name": "Энергоячейка",
-    "type": "energy",
-    "description": "Восстанавливает 40 энергии",
-    "effect": 40
-  }
+  "medkit": { "name": "Аптечка", "type": "heal", "description": "Восстанавливает 20 здоровья", "effect": 20 },
+  "stimpak": { "name": "Стимулятор", "type": "heal", "description": "Восстанавливает 30 здоровья", "effect": 30 },
+  "battery": { "name": "Батарея", "type": "energy", "description": "Восстанавливает 25 энергии", "effect": 25 },
+  "energy_cell": { "name": "Энергоячейка", "type": "energy", "description": "Восстанавливает 40 энергии", "effect": 40 },
+  "antirad": { "name": "Антирад", "type": "stability", "description": "Снижает нестабильность на 15", "effect": 15 },
+  "rad_away": { "name": "Рад-Авей", "type": "stability", "description": "Снижает нестабильность на 30", "effect": 30 },
+  "combat_knife": { "name": "Боевой нож", "type": "weapon", "description": "Урон 10", "effect": 10 },
+  "pistol": { "name": "Старый пистолет", "type": "weapon", "description": "Урон 8", "effect": 8 },
+  "shotgun": { "name": "Дробовик", "type": "weapon", "description": "Урон 15", "effect": 15 },
+  "rifle": { "name": "Штурмовая винтовка", "type": "weapon", "description": "Урон 18", "effect": 18 },
+  "energy_pistol": { "name": "Энергопистолет", "type": "weapon", "description": "Урон 22", "effect": 22 },
+  "ritual_dagger": { "name": "Ритуальный кинжал", "type": "weapon", "description": "Урон 20", "effect": 20 },
+  "leather_jacket": { "name": "Кожаная куртка", "type": "armor", "description": "Защита +5", "effect": 5 },
+  "combat_armor": { "name": "Боевая броня", "type": "armor", "description": "Защита +15", "effect": 15 },
+  "exoskeleton": { "name": "Экзоскелет", "type": "armor", "description": "Защита +25", "effect": 25 },
+  "keycard": { "name": "Ключ-карта", "type": "craft", "description": "Открывает двери лаборатории", "effect": 0 },
+  "rift_key": { "name": "Ключ Разлома", "type": "craft", "description": "Артефакт, резонирующий с Бездной", "effect": 0 },
+  "scrap": { "name": "Металлолом", "type": "craft", "description": "Материал для крафта", "effect": 0 },
+  "electronics": { "name": "Электроника", "type": "craft", "description": "Компоненты для устройств", "effect": 0 },
+  "chemicals": { "name": "Химикаты", "type": "craft", "description": "Ингредиенты для медикаментов", "effect": 0 }
 }

@@ -9,8 +9,8 @@ class Enemy:
         self.enemy_type = enemy_type   # мутант, бандит, дрон, босс
 
     def attack(self, player):
-        dealt = max(1, self.damage + random.randint(-2, 2))
-        player.hp -= dealt
+        raw = max(1, self.damage + random.randint(-2, 2))
+        dealt = player.take_damage(raw)
         print(f"{self.name} атакует и наносит {dealt} урона.")
 
     def is_alive(self):

@@ -10,8 +10,20 @@ class Player:
         self.stability = 0        # 0..100, при 100 – ассимиляция
         self.inventory = []       # список Item
         self.weapon = None        # экипированное оружие
+        self.armor = 0            # защита от брони
         self.current_location = None
         self.reputation = {}      # отношения с фракциями
+
+    def take_damage(self, damage):
+        """Получить урон с учётом брони."""
+        actual = max(1, damage - self.armor)
+        self.hp -= actual
+        return actual
+
+    def equip_armor(self, armor):
+        """Экипировать броню."""
+        self.armor = armor.effect
+        print(f"Ты надеваешь {armor.name} (защита +{armor.effect}).")
 
     def show_status(self):
         print(f"\n=== {self.name} ===")
@@ -19,16 +31,18 @@ class Player:
         print(f"Энергия: {self.energy}/{self.max_energy}")
         print(f"Стабильность: {self.stability}/100")
         if self.weapon:
-            print(f"Оружие: {self.weapon.name} (урон {self.weapon.damage})")
+            print(f"Оружие: {self.weapon.name} (урон {self.weapon.effect})")
         else:
             print("Оружие: нет (кулаки, урон 2-4)")
+        if self.armor:
+            print(f"Броня: защита +{self.armor}")
         if self.inventory:
             print("Инвентарь:", ", ".join(item.name for item in self.inventory))
         else:
             print("Инвентарь: пусто")
 
     def attack(self, enemy):
-        base = self.weapon.damage if self.weapon else 3
+        base = self.weapon.effect if self.weapon else 3
         damage = max(1, base + random.randint(-2, 2))
         enemy.hp -= damage
         print(f"{self.name} атакует {enemy.name} и наносит {damage} урона.")
