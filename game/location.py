@@ -46,6 +46,14 @@ class World:
         self.npcs = self._load_npcs(npcs_file)
         self.locations = self._load_locations(locations_file)
         self._connect_locations()
+        self.quests = self._load_quests()
+
+    def _load_quests(self, filepath=None):
+        """Читает quests.json и возвращает словарь {id: данные}."""
+        if filepath is None:
+            filepath = os.path.join(DATA_DIR, "quests.json")
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
 
     def _load_items(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as f:

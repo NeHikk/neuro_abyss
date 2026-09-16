@@ -1,0 +1,22 @@
+{
+  "igor_batteries": {
+    "name": "Электричество для деревни",
+    "description": "Старейшина Игорь просит найти 2 батареи в руинах города. Без них генератор деревни скоро остановится.",
+    "type": "collect",
+    "target": "battery",
+    "amount": 2,
+    "reward_items": ["stimpak", "antirad"],
+    "reward_reputation": { "village": 10 },
+    "giver": "igor"
+  },
+  "mikhail_wolves": {
+    "name": "Угроза с востока",
+    "description": "Михаил жалуется, что волки-мутанты не дают торговым путям. Убей 2 порченых волка в Тёмном лесу.",
+    "type": "kill",
+    "target": "corrupted_wolf",
+    "amount": 2,
+    "reward_items": ["pistol"],
+    "reward_reputation": { "shelter": 15 },
+    "giver": "mikhail"
+  }
+}
