@@ -1,4 +1,5 @@
 import random
+import json
 from rich.console import Console
 from rich.panel import Panel
 
@@ -95,3 +96,69 @@ class Player:
         if weapon in self.inventory:
             self.inventory.remove(weapon)
         console.print(f"[green]Ты экипировал {weapon.name}.[/green]")
+
+    def save_game(self, filename="save.json"):
+        """Сохраняет состояние игрока в JSON."""
+        data = {
+            "name": self.name,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "energy": self.energy,
+            "max_energy": self.max_energy,
+            "stability": self.stability,
+            "armor": self.armor,
+            "current_location_id": self.current_location.id if self.current_location else "village",
+            "inventory_items": [item.name for item in self.inventory],
+            "weapon_name": self.weapon.name if self.weapon else None,
+            "reputation": self.reputation
+        }
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        console.print("\n[bold green]✓ Игра успешно сохранена![/bold green]")
+
+    def load_game(self, filename="save.json", world=None):
+        """Загружает состояние игрока из JSON."""
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            self.name = data["name"]
+            self.hp = data["hp"]
+            self.max_hp = data["max_hp"]
+            self.energy = data["energy"]
+            self.max_energy = data["max_energy"]
+            self.stability = data["stability"]
+            self.armor = data["armor"]
+            self.reputation = data.get("reputation", {})
+
+            # Восстанавливаем локацию
+            if world:
+                location_id = data.get("current_location_id", "village")
+                self.current_location = world.locations.get(location_id)
+
+            # Восстанавливаем инвентарь
+            if world:
+                self.inventory = []
+                for item_name in data.get("inventory_items", []):
+                    # Ищем предмет по имени в мире
+                    for item_id, item in world.items.items():
+                        if item.name == item_name:
+                            self.inventory.append(item)
+                            break
+
+            # Восстанавливаем оружие
+            if world and data.get("weapon_name"):
+                weapon_name = data["weapon_name"]
+                for item_id, item in world.items.items():
+                    if item.name == weapon_name and item.type == "weapon":
+                        self.weapon = item
+                        break
+
+            console.print(f"\n[bold green]✓ Игра загружена! Добро пожаловать обратно, {self.name}.[/bold green]")
+            return True
+        except FileNotFoundError:
+            console.print("[red]✗ Файл сохранения не найден.[/red]")
+            return False
+        except Exception as e:
+            console.print(f"[red]✗ Ошибка загрузки: {e}[/red]")
+            return False

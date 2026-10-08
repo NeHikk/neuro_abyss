@@ -1,5 +1,6 @@
 import time
 import random
+import os
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -17,6 +18,7 @@ class Game:
         self.running = True
         self.player = None
         self.world = None
+        self.save_file = "save.json"
 
     def show_intro(self):
         """Выводит стильное вступление с лором игры."""
@@ -45,18 +47,33 @@ class Game:
 
         time.sleep(1)
         console.print("\n[blink]Нажми Enter, чтобы инициировать нейроподключение...[/blink]", end="")
-        console.input()  # ← ИСПРАВЛЕНО
+        console.input()
         console.clear()
 
     def run(self):
         """Точка входа: показ интро, настройка игры и запуск основного цикла."""
         self.show_intro()
+        
+        # Предлагаем загрузить сохранение
+        if os.path.exists(self.save_file):
+            console.print("\n[yellow]Обнаружен файл сохранения.[/yellow]")
+            load_choice = console.input("[cyan]Загрузить сохраненную игру? (y/n): [/cyan]").strip().lower()
+            if load_choice == 'y':
+                self.world = World()
+                self.player = Player()
+                if self.player.load_game(self.save_file, self.world):
+                    self.main_loop()
+                    return
+                else:
+                    console.print("[red]Не удалось загрузить игру. Начинаем новую...[/red]")
+        
+        # Если не загружаем, начинаем новую игру
         self.setup_game()
         self.main_loop()
 
     def setup_game(self):
         """Создаём игрока и загружаем мир из JSON."""
-        name = console.input("[cyan]Введи позывной Дайвера (по умолчанию Алекс): [/cyan]").strip() or "Алекс"  # ← ИСПРАВЛЕНО
+        name = console.input("[cyan]Введи позывной Дайвера (по умолчанию Алекс): [/cyan]").strip() or "Алекс"
         self.player = Player(name)
         self.world = World()
         self.player.current_location = self.world.get_start_location()
@@ -90,6 +107,7 @@ class Game:
                 "[yellow]2.[/yellow] Осмотреться",
                 "[yellow]3.[/yellow] Подобрать предметы",
                 "[yellow]4.[/yellow] Проверить статус",
+                "[yellow]7.[/yellow] Сохранить игру",
             ]
             if loc.npcs:
                 options.append("[yellow]5.[/yellow] Поговорить с выжившим")
@@ -98,7 +116,7 @@ class Game:
             for o in options:
                 console.print(o)
 
-            choice = console.input("\n[bold cyan]> [/bold cyan]").strip()  # ← ИСПРАВЛЕНО
+            choice = console.input("\n[bold cyan]> [/bold cyan]").strip()
 
             if choice == "1":
                 self.move()
@@ -113,6 +131,8 @@ class Game:
             elif choice == "6":
                 self.running = False
                 console.print("\n[bold yellow]Игра завершена. До встречи в Бездне...[/bold yellow]")
+            elif choice == "7":
+                self.player.save_game(self.save_file)
             else:
                 console.print("[red]Неверный ввод.[/red]")
 
@@ -131,7 +151,7 @@ class Game:
         console.print("\n[cyan]Куда идти?[/cyan]")
         for direction in loc.exits:
             console.print(f"  • [yellow]{direction}[/yellow]")
-        direction = console.input("[cyan]Направление: [/cyan]").strip().lower()  # ← ИСПРАВЛЕНО
+        direction = console.input("[cyan]Направление: [/cyan]").strip().lower()
         if direction in loc.exits:
             self.player.current_location = loc.exits[direction]
             console.print(f"\n[green]Ты перемещаешься в новую локацию...[/green]")
@@ -169,7 +189,7 @@ class Game:
         console.print("  [yellow]0.[/yellow] Ничего")
 
         try:
-            choice = int(console.input("[cyan]> [/cyan]"))  # ← ИСПРАВЛЕНО
+            choice = int(console.input("[cyan]> [/cyan]"))
         except ValueError:
             console.print("[red]Нужно ввести число.[/red]")
             return
