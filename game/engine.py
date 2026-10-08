@@ -1,8 +1,15 @@
+import time
+import random
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
+
 from game.player import Player
 from game.location import World
 from game.battle import start_battle
 from game.dialogue import NPC
-import random
+
+console = Console()
 
 
 class Game:
@@ -11,18 +18,51 @@ class Game:
         self.player = None
         self.world = None
 
+    def show_intro(self):
+        """Выводит стильное вступление с лором игры."""
+        title = Text("""
+    ███╗   ██╗███████╗██╗  ██╗██╗   ██╗███████╗
+    ████╗  ██║██╔════╝╚██╗██╔╝██║   ██║██╔════╝
+    ██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║███████╗
+    ██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║╚════██║
+    ██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝███████║
+    ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+        """, style="bold cyan")
+
+        console.print(Panel(title, border_style="blue", title="NEURO ABYSS v1.0"))
+
+        lore_text = (
+            "[bold red]2147 год.[/bold red] Мир утонул в собственных мыслях.\n"
+            "Проект «Бездна» должен был даровать бессмертие, но стал цифровым чистилищем.\n"
+            "Те, чей разум не выдержал синхронизации, стали [bold yellow]Ассимилированными[/bold yellow] —\n"
+            "пустыми оболочками, движимыми искаженными алгоритмами.\n\n"
+            "Ты — [bold cyan]Дайвер[/bold cyan]. Твой нейроимплант обладает редкой устойчивостью\n"
+            "к шепоту Бездны. Твоя [bold magenta]Стабильность[/bold magenta] — это грань\n"
+            "между разумом и вечным безумием.\n\n"
+            "[italic]Цель: выжить, найти источник сигнала и не потерять себя.[/italic]"
+        )
+        console.print(Panel(lore_text, border_style="dim", expand=False))
+
+        time.sleep(1)
+        console.print("\n[blink]Нажми Enter, чтобы инициировать нейроподключение...[/blink]", end="")
+        console.input()  # ← ИСПРАВЛЕНО
+        console.clear()
+
     def run(self):
-        """Точка входа: настройка игры и запуск основного цикла."""
+        """Точка входа: показ интро, настройка игры и запуск основного цикла."""
+        self.show_intro()
         self.setup_game()
         self.main_loop()
 
     def setup_game(self):
         """Создаём игрока и загружаем мир из JSON."""
-        print("=== НейроБездна ===")
-        name = input("Введи имя героя (по умолчанию Алекс): ").strip() or "Алекс"
+        name = console.input("[cyan]Введи позывной Дайвера (по умолчанию Алекс): [/cyan]").strip() or "Алекс"  # ← ИСПРАВЛЕНО
         self.player = Player(name)
         self.world = World()
         self.player.current_location = self.world.get_start_location()
+
+        console.print(f"\n[bold green][СИСТЕМА][/bold green]: Нейроинтерфейс активирован. Добро пожаловать, [cyan]{self.player.name}[/cyan].")
+        console.print("[bold green][СИСТЕМА][/bold green]: Уровень стабильности в норме. Начинаем сканирование локации...\n")
 
     def main_loop(self):
         """Основной игровой цикл."""
@@ -33,32 +73,32 @@ class Game:
             # --- Бой с врагами, если они есть в локации ---
             if loc.enemies:
                 enemy = loc.enemies[0]
-                print(f"На тебя нападает {enemy.name}!")
+                console.print(f"\n[bold red]⚠ НА ПАДАЕТ {enemy.name.upper()}! ⚠[/bold red]")
                 if start_battle(self.player, enemy):
                     loc.enemies.remove(enemy)
                     if not loc.enemies:
-                        print("Врагов больше нет.")
+                        console.print("[green]Врагов больше нет.[/green]")
                 elif self.player.hp <= 0:
                     break
                 else:
-                    # Игрок сбежал — пропускаем остальные действия на этот ход
                     continue
 
             # --- Меню действий ---
-            print("\nЧто делаешь?")
+            console.print("\n[bold cyan]═══ ЧТО ДЕЛАЕШЬ? ═══[/bold cyan]")
             options = [
-                "1. Идти",
-                "2. Осмотреться",
-                "3. Подобрать предметы",
-                "4. Проверить статус",
+                "[yellow]1.[/yellow] Идти",
+                "[yellow]2.[/yellow] Осмотреться",
+                "[yellow]3.[/yellow] Подобрать предметы",
+                "[yellow]4.[/yellow] Проверить статус",
             ]
             if loc.npcs:
-                options.append("5. Поговорить с выжившим")
-            options.append("6. Выйти из игры")
-            for o in options:
-                print(o)
+                options.append("[yellow]5.[/yellow] Поговорить с выжившим")
+            options.append("[yellow]6.[/yellow] Выйти из игры")
 
-            choice = input("> ").strip()
+            for o in options:
+                console.print(o)
+
+            choice = console.input("\n[bold cyan]> [/bold cyan]").strip()  # ← ИСПРАВЛЕНО
 
             if choice == "1":
                 self.move()
@@ -72,78 +112,81 @@ class Game:
                 self.talk_to_npc(loc.npcs[0])
             elif choice == "6":
                 self.running = False
-                print("Игра завершена.")
+                console.print("\n[bold yellow]Игра завершена. До встречи в Бездне...[/bold yellow]")
             else:
-                print("Неверный ввод.")
+                console.print("[red]Неверный ввод.[/red]")
 
         if self.player.hp <= 0:
-            print("\nИгра окончена. Ты погиб.")
+            console.print("\n[bold red]═══ ИГРА ОКОНЧЕНА ═══[/bold red]")
+            console.print("[red]Ты погиб. Бездна поглотила твой разум...[/red]")
 
     # ------------------- Вспомогательные методы -------------------
-
     def move(self):
         """Перемещение между локациями."""
         loc = self.player.current_location
         if not loc.exits:
-            print("Некуда идти.")
+            console.print("[red]Некуда идти.[/red]")
             return
-        print("Куда идти?")
+
+        console.print("\n[cyan]Куда идти?[/cyan]")
         for direction in loc.exits:
-            print(f"- {direction}")
-        direction = input("Направление: ").strip().lower()
+            console.print(f"  • [yellow]{direction}[/yellow]")
+        direction = console.input("[cyan]Направление: [/cyan]").strip().lower()  # ← ИСПРАВЛЕНО
         if direction in loc.exits:
             self.player.current_location = loc.exits[direction]
+            console.print(f"\n[green]Ты перемещаешься в новую локацию...[/green]")
         else:
-            print("Туда нельзя идти.")
+            console.print("[red]Туда нельзя идти.[/red]")
 
     def look_closer(self):
         """Подробный осмотр локации."""
         loc = self.player.current_location
-        print(loc.description)
+        console.print(f"\n[dim italic]{loc.description}[/dim italic]")
+
         if loc.items:
-            print("Предметы:", ", ".join(item.name for item in loc.items))
+            console.print("[cyan]Предметы:[/cyan] " + ", ".join(item.name for item in loc.items))
         else:
-            print("Предметов нет.")
+            console.print("[dim]Предметов нет.[/dim]")
+
         if loc.enemies:
-            print("Враги:", ", ".join(enemy.name for enemy in loc.enemies))
+            console.print("[red]Враги:[/red] " + ", ".join(enemy.name for enemy in loc.enemies))
         else:
-            print("Врагов не видно.")
+            console.print("[dim]Врагов не видно.[/dim]")
+
         if loc.npcs:
-            print("Выжившие:", ", ".join(npc.name for npc in loc.npcs))
+            console.print("[green]Выжившие:[/green] " + ", ".join(npc.name for npc in loc.npcs))
 
     def pickup_items(self):
         """Подбор предметов с автоэкипировкой оружия и брони."""
         loc = self.player.current_location
         if not loc.items:
-            print("Здесь нечего подбирать.")
+            console.print("[red]Здесь нечего подбирать.[/red]")
             return
 
-        print("Что подобрать?")
+        console.print("\n[cyan]Что подобрать?[/cyan]")
         for idx, item in enumerate(loc.items, 1):
-            print(f"{idx}. {item.name}")
-        print("0. Ничего")
+            console.print(f"  [yellow]{idx}.[/yellow] {item.name}")
+        console.print("  [yellow]0.[/yellow] Ничего")
 
         try:
-            choice = int(input("> "))
+            choice = int(console.input("[cyan]> [/cyan]"))  # ← ИСПРАВЛЕНО
         except ValueError:
-            print("Нужно ввести число.")
+            console.print("[red]Нужно ввести число.[/red]")
             return
 
         if 1 <= choice <= len(loc.items):
             item = loc.items.pop(choice - 1)
-
-            # Логика автоэкипировки
             if item.type == "weapon" and self.player.weapon is None:
                 self.player.weapon = item
-                print(f"Ты подобрал и сразу экипировал {item.name}.")
+                console.print(f"[green]Ты подобрал и сразу экипировал {item.name}.[/green]")
             elif item.type == "armor":
                 self.player.equip_armor(item)
-                print(f"Ты подобрал {item.name}.")
+                console.print(f"[green]Ты подобрал {item.name}.[/green]")
             else:
                 self.player.inventory.append(item)
-                print(f"Ты подобрал {item.name}.")
+                console.print(f"[green]Ты подобрал {item.name}.[/green]")
         elif choice != 0:
-            print("Неверный номер.")
+            console.print("[red]Неверный номер.[/red]")
 
     def talk_to_npc(self, npc):
         """Разговор с NPC."""

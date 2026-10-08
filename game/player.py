@@ -1,18 +1,23 @@
 import random
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
+
 
 class Player:
     def __init__(self, name="Алекс"):
         self.name = name
         self.hp = 100
         self.max_hp = 100
-        self.energy = 50          # энергия импланта
+        self.energy = 50  # энергия импланта
         self.max_energy = 50
-        self.stability = 0        # 0..100, при 100 – ассимиляция
-        self.inventory = []       # список Item
-        self.weapon = None        # экипированное оружие
-        self.armor = 0            # защита от брони
+        self.stability = 0  # 0..100, при 100 – ассимиляция
+        self.inventory = []  # список Item
+        self.weapon = None  # экипированное оружие
+        self.armor = 0  # защита от брони
         self.current_location = None
-        self.reputation = {}      # отношения с фракциями
+        self.reputation = {}  # отношения с фракциями
 
     def take_damage(self, damage):
         """Получить урон с учётом брони."""
@@ -23,51 +28,70 @@ class Player:
     def equip_armor(self, armor):
         """Экипировать броню."""
         self.armor = armor.effect
-        print(f"Ты надеваешь {armor.name} (защита +{armor.effect}).")
+        console.print(f"[green]Ты надеваешь {armor.name} (защита +{armor.effect}).[/green]")
 
     def show_status(self):
-        print(f"\n=== {self.name} ===")
-        print(f"Здоровье: {self.hp}/{self.max_hp}")
-        print(f"Энергия: {self.energy}/{self.max_energy}")
-        print(f"Стабильность: {self.stability}/100")
-        if self.weapon:
-            print(f"Оружие: {self.weapon.name} (урон {self.weapon.effect})")
+        """Красивый вывод статуса с прогресс-барами."""
+        hp_percent = int((self.hp / self.max_hp) * 100)
+        stab_percent = self.stability
+
+        # Прогресс-бары
+        hp_bar = "█" * (hp_percent // 5) + "░" * (20 - hp_percent // 5)
+        stab_bar = "█" * (stab_percent // 5) + "░" * (20 - stab_percent // 5)
+
+        # Цвет стабильности в зависимости от значения
+        if stab_percent < 50:
+            stab_color = "green"
+        elif stab_percent < 80:
+            stab_color = "yellow"
         else:
-            print("Оружие: нет (кулаки, урон 2-4)")
-        if self.armor:
-            print(f"Броня: защита +{self.armor}")
+            stab_color = "red"
+
+        status_text = (
+            f"[red]ЗДОРОВЬЕ[/red]      {hp_bar} [bold]{hp_percent}%[/bold]\n"
+            f"[{stab_color}]СТАБИЛЬНОСТЬ[/{stab_color}] {stab_bar} [bold]{stab_percent}%[/bold]\n"
+            f"[yellow]ЭНЕРГИЯ[/yellow]       {'█' * (self.energy // 5)}{'░' * (20 - self.energy // 5)} [bold]{self.energy}/{self.max_energy}[/bold]\n\n"
+            f"[cyan]Оружие:[/cyan] {self.weapon.name + ' (урон ' + str(self.weapon.effect) + ')' if self.weapon else '[dim]Кулаки (урон 2-4)[/dim]'}\n"
+            f"[cyan]Броня:[/cyan]  +{self.armor}\n"
+        )
+
         if self.inventory:
-            print("Инвентарь:", ", ".join(item.name for item in self.inventory))
+            status_text += "\n[bold green]ИНВЕНТАРЬ:[/bold green]\n"
+            for item in self.inventory:
+                status_text += f"  • {item.name}\n"
         else:
-            print("Инвентарь: пусто")
+            status_text += "\n[dim italic]Инвентарь пуст[/dim italic]"
+
+        console.print(Panel(status_text, title=f" ДАЙВЕР: {self.name.upper()} ", border_style="cyan", expand=False))
 
     def attack(self, enemy):
         base = self.weapon.effect if self.weapon else 3
         damage = max(1, base + random.randint(-2, 2))
         enemy.hp -= damage
-        print(f"{self.name} атакует {enemy.name} и наносит {damage} урона.")
+        console.print(f"[yellow]{self.name}[/yellow] атакует [red]{enemy.name}[/red] и наносит [bold]{damage}[/bold] урона.")
         if enemy.hp <= 0:
-            print(f"{enemy.name} уничтожен!")
+            console.print(f"[green]{enemy.name} уничтожен![/green]")
 
     def use_item(self, item):
         if item.type == "heal":
             self.hp = min(self.max_hp, self.hp + item.effect)
-            print(f"Ты используешь {item.name} и восстанавливаешь {item.effect} здоровья.")
+            console.print(f"[green]Ты используешь {item.name} и восстанавливаешь {item.effect} здоровья.[/green]")
             self.inventory.remove(item)
         elif item.type == "energy":
             self.energy = min(self.max_energy, self.energy + item.effect)
-            print(f"Ты используешь {item.name} и восстанавливаешь {item.effect} энергии.")
+            console.print(f"[yellow]Ты используешь {item.name} и восстанавливаешь {item.effect} энергии.[/yellow]")
             self.inventory.remove(item)
         elif item.type == "stability":
             self.stability = max(0, self.stability - item.effect)
-            print(f"Ты используешь {item.name} и снижаешь нестабильность на {item.effect}.")
+            console.print(f"[magenta]Ты используешь {item.name} и снижаешь нестабильность на {item.effect}.[/magenta]")
             self.inventory.remove(item)
         else:
-            print(f"{item.name} нельзя использовать напрямую.")
+            console.print(f"[red]{item.name} нельзя использовать напрямую.[/red]")
 
     def equip_weapon(self, weapon):
         if self.weapon:
             self.inventory.append(self.weapon)
         self.weapon = weapon
-        self.inventory.remove(weapon)
-        print(f"Ты экипировал {weapon.name}.")
+        if weapon in self.inventory:
+            self.inventory.remove(weapon)
+        console.print(f"[green]Ты экипировал {weapon.name}.[/green]")
